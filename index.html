@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <title>Document</title>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="nav d-flex justify-content-center bg-dark text-white">
+        <h1>Weather Dashboard</h1>
+    </nav>
+      
+
+    <!-- container -->
+    <!-- <section class="container"> -->
+        <!-- main row -->
+        <section id="weather" class="row">
+        
+            <!-- search bar col -->
+            <!-- list of previous searches -->
+            <div class="col-12 col-sm-3">
+                <form id="search-form" >
+                    <div class="form-group">
+                        <label for="input-search">Search For a City</label>
+                        <input type="text" class="form-control" id="input-search" placeholder="City">
+                        
+                    </div>
+                    <button class="btn btn-primary d-block w-100" type="submit">Search</button>
+                </form>
+            </div>
+            
+            <div class="col-12 col-sm-9">
+                <!-- result col -->
+                <!-- current day row -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                              <h6 id="current-day-city" class="card-title">Atlanta 2022-06-20 icon</h6>
+                                <div class="card-text">
+                                    <p>Temp: <span id="current-day-temp">26c</span></p>
+                                    <p>Wind: <span id="current-day-wind">15km/h</span></p>
+                                    <p>Humidity: <span id="current-day-humidity">35%</span></p>
+                                    <p>UV: <span id="current-day-uv">30</span></p>
+                                </div>
+                             
+                            </div>
+                          </div>
+                          
+                          
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h2>5 Day Forecast:</h2>
+                </div>
+                <!-- 5 day forecast row -->
+                <div class="row forecast-row">
+
+                    <div class="col-2">
+                        <div class="card">
+                            <div class="card-body">
+                              <h6 class="card-title">2022/06/21 icon</h6>
+                              <div class="card-text">
+                                <p>Temp: <span id="current-day-temp">26c</span></p>
+                                <p>Wind: <span id="current-day-wind">15km/h</span></p>
+                                <p>Humidity: <span id="current-day-humidity">35%</span></p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                    </div>
+                </div>
+                <!-- 5 cols, each has card representing futre weather -->
+                
+            </div>
+        
+        </section>
+    <!-- </section> -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.3/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+    <script src="./assets/javascript/script.js"></script>
+</body>
+</html>
