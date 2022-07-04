@@ -52,8 +52,9 @@ searchForm.addEventListener('submit', function(event) {
     //send req to weather api
 
     // fetch weather data base on city name
-    getWeatherData(userInput)
+    getWeatherData(inputSearch.value)
         .then(function(weatherData){
+            
             
             console.log(weatherData);
 
@@ -79,7 +80,7 @@ searchForm.addEventListener('submit', function(event) {
             showForecast();
 
         })
-        
+        return weatherData;
     
 })
 
