@@ -8,36 +8,33 @@ const currentDayHumidity = document.getElementById("current-day-humidity");
 const currentDayUv = document.getElementById("current-day-uv");
 const divForecast = document.getElementById("forecast-row");
 const weatherEl = document.getElementById('weather');
-const userInput = inputSearch.value;
+const divBody = document.getElementById('card-body');
+const iconImage = document.getElementById('icon-image');
+
 
 function getOneCallApi(lon, lat){
-    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`)
+    return fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`)
     .then(function(response){
+        
         return response.json()
     })
-    .then(function(onecallData){
-        console.log(onecallData)
-    })
+    
 
 }
 
 
 function getWeatherData(city){
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
+    return fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
     .then(function(response){
         return response.json();
-        
-        
     })
     .then(function(currentWeather){
+        console.log(currentWeather);
         // console.log(currentWeather);
-        
-        // console.log(currentWeather);
-        return getOneCallApi(currentWeather.coord.lon, currentWeather.coord.lat)
+
+        return getOneCallApi(currentWeather.coord.lon, currentWeather.coord.lat, currentWeather.dt)
     })
-    
-    
     
 }
 
@@ -46,14 +43,17 @@ searchForm.addEventListener('submit', function(event) {
     event.preventDefault();
     
     //get user input
+    const userInput = inputSearch.value;
     // const userInput = inputSearch.value;
     // console.log(userInput);
 
     //send req to weather api
 
     // fetch weather data base on city name
-    getWeatherData(inputSearch.value)
+    // getWeatherData(inputSearch.value)
+    getWeatherData(userInput)
         .then(function(weatherData){
+            // return weatherData;
             
             
             console.log(weatherData);
@@ -67,73 +67,112 @@ searchForm.addEventListener('submit', function(event) {
             // current
             const dateTime = moment(weatherData.current.dt, 'X').format("YYYY-MM-DD");
             // console.log(dateTime);
+            // console.log(dateTime);
+            // var currentWeatherUV = weatherData.current.uvi;
+            // console.log(currentWeatherUV);
+            var currentCityWeatherIcon = weatherData.current.weather[0].icon;
+            // console.log(currentCityWeatherIcon);
+            // var currentWeatherIconEl = $('<img>');
+            $("#icon-image").attr("src", "http://openweathermap.org/img/wn/" + currentCityWeatherIcon + ".png");
+            // divBody.append(currentWeatherIconEl);
 
-            currentDayCity.innerHTML = `${userInput} ${dateTime} icon`
+            // const icon = weatherData
+            currentDayCity.innerHTML = `${userInput} ${dateTime}`;
             currentDayTemp.textContent = weatherData.current.temp;
+            currentDayWind.textContent = weatherData.current.wind_speed;
+            currentDayHumidity.textContent = weatherData.current.humidity;
+            currentDayUv.textContent = weatherData.current.uvi;
             //current temp is in kelvin, google to convert to celcius
-
+            
             
             
             //store city name in localstorage
             // render history in the search list
-
-            showForecast();
-
+            
+            weatherData.daily.slice(0, 5).forEach((weather) => {
+                console.log(weatherData);
+                const peanuts = createForecastcolumn(weather.dt, weather.weather[0].icon, weather.temp.day, weather.wind_speed, weather.humidity);
+                console.log(weather);
+                
+                // console.log(list.weather.icon);
+                divForecast.append(peanuts[0]);  
+            })
+            
+            
+            
         })
-        return weatherData;
+        // return getWeatherData();
+        
+    });
     
-})
-
-
-// function showForecast(lon, lat){
-//     return fetch(`https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${lat}&lon=${lon}&appid=${apiKey}`)
-//         .then(function(response){
-//         return response.json()})
-
-//         divForecast.appendChild(h2)
-
-
-
-
-// $(structure.append(weatherEl));
-
-function showForecast(days){
-    getWeatherData(userInput);
-
-    const row = $("<div>");
-    let rowClass = 'row forecast-row';
-    row.attr('class', rowClass);
     
+    // function showForecast(lon, lat){
+        //     fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`)
+        //         .then(function(response){
+            //             console.log(response);
+            //         return response.json()})
+            
+            //         // divForecast.appendChild(h2)
+            
+            // };
+            
+            
+            // $(structure.append(weatherEl));
+            
+function createForecastcolumn(date, icon, temp, wind, humidity){
+    // getWeatherData(userInput);
     const divCol = $("<div>");
     divCol.attr('class', 'col-2');
-
+     
+                
     const divCard = $("<div>");
     divCard.attr('class', 'card');
-
+    // divCard.text("ABCDE");
+    divCol.append(divCard);
+    
     const divCardBody = $("<div>");
     divCardBody.attr('class', 'card-body');
+    divCard.append(divCardBody);
+    
+    const fcDateTime = moment(date, 'X').format("YYYY-MM-DD");
+    console.log(fcDateTime);
 
     const divCardTitle = $("<h6>");
     divCardTitle.attr('class', 'card-title');
-
+    divCardTitle.text(fcDateTime);
+    console.log(divCardTitle);
+    divCardBody.append(divCardTitle);
+    // get weather icon and display by appending to city name element            
+    var forecastWeatherIconEl = $('<img>');
+    forecastWeatherIconEl.attr("src", "http://openweathermap.org/img/wn/" + icon + ".png");
+    divCardBody.append(forecastWeatherIconEl);
+    
+    
     const divCardText = $("<div>");
     divCardText.attr('class', 'card-text');
-
+    divCardBody.append(divCardText);
+    
     const pSpanTemp = $("<p>");
     pSpanTemp.attr('id', 'current-day-temp');
-
+    pSpanTemp.text("Temp: " + " " + temp);
+    divCardText.append(pSpanTemp);
+    
     const pSpanWind = $("<p>");
     pSpanWind.attr('id', 'current-day-wind');
-
+    pSpanWind.text("Wind: " + " " + wind);
+    divCardText.append(pSpanWind);
+    
     const pSpanHumidity = $("<p>");
     pSpanHumidity.attr('id', 'current-day-humidity');
-    pSpanHumidity.textContent = 'hello';
-    console.log(days);
-
-
-    row.append().appendChild();
-    // row.append(divCol, divCard, divCardBody, divCardTitle, divCardText, pSpanTemp, pSpanWind, pSpanHumidity);
-    return row;
+    pSpanHumidity.text("Humidity: " + " " + humidity);
+    // pSpanHumidity.textContent = 'hello';
+    divCardText.append(pSpanHumidity);
+    // console.log();
+    
+    
+    // row.append().appendChild();
+    
+    return divCol;
     
 
     // const textarea = $('<textarea id="text-box" rows="3">')
@@ -159,7 +198,6 @@ function showForecast(days){
     //saves to page and enters event into local storage
 
 }
-// showForecast();
-// console.log('hello');
+
 
 
