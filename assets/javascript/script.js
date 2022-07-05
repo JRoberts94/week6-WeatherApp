@@ -104,7 +104,7 @@ searchForm.addEventListener('submit', function(event) {
             
         })
         // return getWeatherData();
-        
+        showSearchHistory();
     });
     
     
@@ -184,7 +184,7 @@ function showSearchHistory(){
         prevSearchCity.setAttribute("type","text");
         prevSearchCity.setAttribute("readonly",true);
         prevSearchCity.setAttribute("class", "form-control d-block bg-black");
-        prevSearchCity.setAttribute("value", searchHistory[i]);
+        prevSearchCity.setAttribute("value", searchHistory[index]);
 
         prevSearchCity.addEventListener("click",function() {
             getWeatherData(prevSearchCity.value);
