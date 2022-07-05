@@ -13,9 +13,14 @@ const iconImage = document.getElementById('icon-image');
 const searchHistoryDiv = document.getElementById('search-history');
 const clearHistoryButton = document.getElementById('clear-history');
 
+function kelvinToCelsius(kelvin){
+    return kelvin - 273.15
+}
+
 let searchHistory = JSON.parse(localStorage.getItem("search")) || [];
     console.log(searchHistory);
 
+    
 function getOneCallApi(lon, lat){
     return fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`)
     .then(function(response){
@@ -42,77 +47,86 @@ function getWeatherData(city){
 }
 
 //when i click search button
+// currentDayCity.innerHTML = "";
+// currentDayTemp.textContent = "";
+// currentDayWind.textContent = "";
+// currentDayHumidity.textContent = "";
+// currentDayUv.textContent = "";
 searchForm.addEventListener('submit', function(event) {
     event.preventDefault();
     
     //get user input
     const userInput = inputSearch.value;
+    
 
     //send req to weather api
-
+    
     // fetch weather data base on city name
-
     getWeatherData(userInput)
-        .then(function(weatherData){
-            // return weatherData;
-            
-            
-            console.log(weatherData);
+    .then(function(weatherData){
+        // return weatherData;
+        
+        
+        console.log(weatherData);
+        
+        //once we have the data, 
+        //generate data into the dom
+        
+        
+        // GOOGLE - how do i convert icon code into image
+        
+        // current
+        const dateTime = moment(weatherData.current.dt, 'X').format("DD-MM-YYYY");
+        // var currentWeatherUV = weatherData.current.uvi;
+        // console.log(currentWeatherUV);
+        var currentCityWeatherIcon = weatherData.current.weather[0].icon;
+        // console.log(currentCityWeatherIcon);
+        // var currentWeatherIconEl = $('<img>');
+        $("#icon-image").attr("src", "http://openweathermap.org/img/wn/" + currentCityWeatherIcon + ".png");
+        // divBody.append(currentWeatherIconEl);
+        
+        // const icon = weatherData
+        currentDayCity.innerHTML = `${userInput} ${dateTime}`;
+        currentDayTemp.textContent = kelvinToCelsius(weatherData.current.temp).toFixed(2);
+        currentDayWind.textContent = weatherData.current.wind_speed;
+        currentDayHumidity.textContent = weatherData.current.humidity;
+        currentDayUv.textContent = weatherData.current.uvi;
+        //current temp is in kelvin, google to convert to celcius
+        
+        
+        //store city name in localstorage
+        // render history in the search list
+        divForecast.textContent = "";
 
-            //once we have the data, 
-            //generate data into the dom
-    
-    
-            // GOOGLE - how do i convert icon code into image
-    
-            // current
-            const dateTime = moment(weatherData.current.dt, 'X').format("DD-MM-YYYY");
-            // var currentWeatherUV = weatherData.current.uvi;
-            // console.log(currentWeatherUV);
-            var currentCityWeatherIcon = weatherData.current.weather[0].icon;
-            // console.log(currentCityWeatherIcon);
-            // var currentWeatherIconEl = $('<img>');
-            $("#icon-image").attr("src", "http://openweathermap.org/img/wn/" + currentCityWeatherIcon + ".png");
-            // divBody.append(currentWeatherIconEl);
-
-            // const icon = weatherData
-            currentDayCity.innerHTML = `${userInput} ${dateTime}`;
-            currentDayTemp.textContent = weatherData.current.temp;
-            currentDayWind.textContent = weatherData.current.wind_speed;
-            currentDayHumidity.textContent = weatherData.current.humidity;
-            currentDayUv.textContent = weatherData.current.uvi;
-            //current temp is in kelvin, google to convert to celcius
+        weatherData.daily.slice(0, 5).forEach((weather) => {
+            // console.log(weatherData);
+            const peanuts = createForecastcolumn(weather.dt, weather.weather[0].icon, weather.temp.day, weather.wind_speed, weather.humidity);
             
             
-            //store city name in localstorage
-            // render history in the search list
+            // console.log(list.weather.icon);
+            divForecast.append(peanuts[0]); 
             
-            weatherData.daily.slice(0, 5).forEach((weather) => {
-                // console.log(weatherData);
-                const peanuts = createForecastcolumn(weather.dt, weather.weather[0].icon, weather.temp.day, weather.wind_speed, weather.humidity);
-                
-                
-                // console.log(list.weather.icon);
-                divForecast.append(peanuts[0]); 
-                
-                
-                
-                
-            })
             
             
             
         })
-        // return getWeatherData();
+        
+        
+        
+        const savedHistory = inputSearch.value;
+        searchHistory.push(savedHistory);
+        localStorage.setItem("search",JSON.stringify(searchHistory));
         showSearchHistory();
-    });
+    })
+    // return getWeatherData();
+});
+
+
+function createForecastcolumn(date, icon, temp, wind, humidity){
+    const divCol = $("<div>");
+    divCol.attr('class', 'col-2');
     
-    
-    function createForecastcolumn(date, icon, temp, wind, humidity){
-        const divCol = $("<div>");
-        divCol.attr('class', 'col-2');
-          
-        const divCard = $("<div>");
+    const divCard = $("<div>");
         divCard.attr('class', 'card');
         divCol.append(divCard);
                 
@@ -124,13 +138,14 @@ searchForm.addEventListener('submit', function(event) {
         // console.log(fcDateTime);
                 
         const divCardTitle = $("<h6>");
-        divCardTitle.attr('class', 'card-title');
+        divCardTitle.attr('class', 'card-title text-center');
         divCardTitle.text(fcDateTime + " " + inputSearch.value);
         console.log(divCardTitle);
         divCardBody.append(divCardTitle);
         // get weather icon and display by appending to city name element            
         var forecastWeatherIconEl = $('<img>');
         forecastWeatherIconEl.attr("src", "http://openweathermap.org/img/wn/" + icon + ".png");
+        forecastWeatherIconEl.attr('class', 'd-flex align-self-center justify-content-center');
         divCardBody.append(forecastWeatherIconEl);
                 
                 
@@ -141,19 +156,19 @@ searchForm.addEventListener('submit', function(event) {
         const pSpanTemp = $("<p>");
         pSpanTemp.attr('id', 'current-day-temp');
         pSpanTemp.attr('class', 'd-flex justify-content-center');
-        pSpanTemp.text("Temp: " + " " + temp);
+        pSpanTemp.text("Temp: " + " " + kelvinToCelsius(temp).toFixed(2) + 'c');
         divCardText.append(pSpanTemp);
         
         const pSpanWind = $("<p>");
         pSpanWind.attr('id', 'current-day-wind');
         pSpanWind.attr('class', 'd-flex justify-content-center');
-        pSpanWind.text("Wind: " + " " + wind);
+        pSpanWind.text("Wind: " + " " + wind + "kmh");
         divCardText.append(pSpanWind);
                 
         const pSpanHumidity = $("<p>");
         pSpanHumidity.attr('id', 'current-day-humidity');
         pSpanHumidity.attr('class', 'd-flex justify-content-center');
-        pSpanHumidity.text("Humidity: " + " " + humidity);
+        pSpanHumidity.text("Humidity: " + " " + humidity + "%");
         divCardText.append(pSpanHumidity);
         
         // row.append().appendChild();
@@ -161,10 +176,9 @@ searchForm.addEventListener('submit', function(event) {
         // let savedData = userInput + peanuts;
         // console.log(savedData);
 
-        const savedHistory = inputSearch.value;
+        
 
-        searchHistory.push(savedHistory);
-        localStorage.setItem("search",JSON.stringify(searchHistory));
+        
         return divCol;
                 
     //then i can add text to each timeblock 
@@ -180,17 +194,19 @@ function showSearchHistory(){
     for (let index = 0; index < searchHistory.length; index++) {
         // const prevSearchCity = searchHistory[index];
         const prevSearchCity = document.createElement("input");
-        console.log(prevSearchCity);
+        // console.log(prevSearchCity);
         prevSearchCity.setAttribute("type","text");
         prevSearchCity.setAttribute("readonly",true);
         prevSearchCity.setAttribute("class", "form-control d-block bg-black");
         prevSearchCity.setAttribute("value", searchHistory[index]);
 
         prevSearchCity.addEventListener("click",function() {
-            getWeatherData(prevSearchCity.value);
+            if (prevSearchCity) {
+                getWeatherData();  
+            } 
         })
-        
         searchHistoryDiv.append(prevSearchCity);
+        
     }
 
 }
@@ -198,7 +214,9 @@ function showSearchHistory(){
 
 clearHistoryButton.addEventListener("click",function() {
     searchHistory = [];
+    localStorage.clear();
     showSearchHistory();
 })
+showSearchHistory();
 
 
