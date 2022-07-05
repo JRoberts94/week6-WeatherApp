@@ -52,17 +52,11 @@ function getWeatherData(city){
 // currentDayWind.textContent = "";
 // currentDayHumidity.textContent = "";
 // currentDayUv.textContent = "";
-searchForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    //get user input
-    const userInput = inputSearch.value;
-    
 
-    //send req to weather api
-    
+
+function generateForcast(city){
     // fetch weather data base on city name
-    getWeatherData(userInput)
+    getWeatherData(city)
     .then(function(weatherData){
         // return weatherData;
         
@@ -86,7 +80,7 @@ searchForm.addEventListener('submit', function(event) {
         // divBody.append(currentWeatherIconEl);
         
         // const icon = weatherData
-        currentDayCity.innerHTML = `${userInput} ${dateTime}`;
+        currentDayCity.innerHTML = `${city} ${dateTime}`;
         currentDayTemp.textContent = kelvinToCelsius(weatherData.current.temp).toFixed(2);
         currentDayWind.textContent = weatherData.current.wind_speed;
         currentDayHumidity.textContent = weatherData.current.humidity;
@@ -118,6 +112,19 @@ searchForm.addEventListener('submit', function(event) {
         localStorage.setItem("search",JSON.stringify(searchHistory));
         showSearchHistory();
     })
+}
+
+searchForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    //get user input
+    const userInput = inputSearch.value;
+    
+    generateForcast(userInput);
+
+    //send req to weather api
+    
+    
     // return getWeatherData();
 });
 
@@ -201,9 +208,15 @@ function showSearchHistory(){
         prevSearchCity.setAttribute("value", searchHistory[index]);
 
         prevSearchCity.addEventListener("click",function() {
-            if (prevSearchCity) {
-                getWeatherData();  
-            } 
+           
+
+            generateForcast(searchHistory[index]);
+
+            //when i click prev searched city history on left sided
+            //re- search that city
+            //initialise the original search function?
+            //
+            //
         })
         searchHistoryDiv.append(prevSearchCity);
         
